@@ -1,102 +1,216 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="fa">
+<html lang="fa" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#0f172a">
-  
-  <title>حسابداری هوشمند ساحل</title>
-  
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #0f172a; font-family: 'Vazirmatn', Tahoma, sans-serif; height: 100vh; overflow: hidden; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>حسابداری هوشمند ساحل</title>
     
-    .app-container { width: 100%; height: 100vh; display: flex; flex-direction: column; background: #0f172a; }
-    
-    .app-header {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      padding: 10px 20px;
-      border-bottom: 2px solid #1e293b;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-shrink: 0;
-    }
-    
-    .app-header .brand { display: flex; align-items: center; gap: 12px; color: #f8fafc; text-decoration: none; }
-    .app-header .brand img { width: 40px; height: 40px; border-radius: 10px; background: #1e293b; padding: 4px; }
-    .app-header .brand h1 { font-size: 16px; font-weight: 700; }
-    .app-header .brand span { font-size: 11px; color: #94a3b8; display: block; }
-    
-    .app-header .actions { display: flex; gap: 10px; align-items: center; }
-    .app-header .actions .status {
-      background: rgba(16, 185, 129, 0.15);
-      color: #34d399;
-      padding: 4px 12px;
-      border-radius: 20px;
-      font-size: 11px;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }
-    .app-header .actions .status .dot { width: 6px; height: 6px; background: #34d399; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
-    
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-    
-    .app-content { flex: 1; width: 100%; background: transparent; }
-    .app-content iframe { width: 100%; height: 100%; border: none; background: transparent; }
-    
-    .app-footer {
-      background: #0f172a;
-      border-top: 1px solid #1e293b;
-      padding: 6px 20px;
-      text-align: center;
-      color: #64748b;
-      font-size: 10px;
-      flex-shrink: 0;
-    }
-    
-    @media (max-width: 768px) {
-      .app-header .brand h1 { font-size: 13px; }
-      .app-header .brand span { font-size: 9px; }
-      .app-header .actions .status { font-size: 9px; padding: 2px 8px; }
-    }
-  </style>
+    <!-- لینک به فایل Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- تنظیمات PWA -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="حسابداری ساحل">
+    <meta name="theme-color" content="#090d16">
+
+    <!-- آیکون برنامه -->
+    <link rel="apple-touch-icon" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100vh;
+            height: -webkit-fill-available;
+            background-color: #060911;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Vazirmatn", "Segoe UI", Roboto, sans-serif;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* پس‌زمینه پویای متحرک */
+        .bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(245, 158, 11, 0.18) 0%, rgba(99, 102, 241, 0.12) 50%, rgba(0, 0, 0, 0) 70%);
+            filter: blur(50px);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: pulseGlow 4s ease-in-out infinite alternate;
+        }
+
+        /* صفحه اسپلش / لودینگ */
+        .splash-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(6, 9, 17, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 10;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.6s;
+        }
+
+        /* کارت شیشه‌ای مدرن */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            padding: 35px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            max-width: 85%;
+            width: 320px;
+            animation: floatUp 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            border-radius: 22px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(245, 158, 11, 0.25);
+            margin-bottom: 20px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .app-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .app-subtitle {
+            font-size: 0.82rem;
+            color: #94a3b8;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        /* لودر خطی مدرن */
+        .loader-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .loader-progress {
+            width: 40%;
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            border-radius: 10px;
+            position: absolute;
+            animation: loadingBar 1.5s ease-in-out infinite;
+        }
+
+        /* آی‌فریم اصلی */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .splash-hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* انیمیشن‌ها */
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.96); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.6; }
+            100% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+
+        @keyframes loadingBar {
+            0% { left: -40%; }
+            50% { left: 40%; width: 60%; }
+            100% { left: 100%; width: 20%; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="app-container">
-  <header class="app-header">
-    <a href="#" class="brand">
-      <img src="https://lh3.googleusercontent.com/d/1MjBP1nitG_R3pTYPfc-BYBwzeuEZs5aO" alt="لوگو">
-      <div>
-        <h1>حسابداری هوشمند ساحل</h1>
-        <span>سیستم هوشمند مدیریت مالی</span>
-      </div>
-    </a>
-    <div class="actions">
-      <span class="status">
-        <span class="dot"></span> آنلاین
-      </span>
+    <!-- هاله نور پس‌زمینه -->
+    <div class="bg-glow"></div>
+
+    <!-- کارت لودینگ شیشه‌ای -->
+    <div class="splash-container" id="splashScreen">
+        <div class="glass-card">
+            <img src="icon.png" alt="لوگو برنامه" class="app-icon" onerror="this.style.display='none'">
+            <div class="app-title">حسابداری هوشمند ساحل</div>
+            <div class="app-subtitle">در حال بارگذاری ایمن...</div>
+            <div class="loader-bar">
+                <div class="loader-progress"></div>
+            </div>
+        </div>
     </div>
-  </header>
 
-  <div class="app-content">
-    <iframe src="https://script.google.com/macros/s/AKfycbwMxLIXB1JCQrmjs4KbKuFDWclDaYzxc0VFPEhKB0fcbgnWhVAVH36eEGeP2lTw0zU/exec" 
-            sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals">
+    <!-- آی‌فریم تمام صفحه برنامه -->
+    <iframe 
+        id="appIframe"
+        src="https://script.google.com/macros/s/AKfycbwMxLIXB1JCQrmjs4KbKuFDWclDaYzxc0VFPEhKB0fcbgnWhVAVH36eEGeP2lTw0zU/exec" 
+        allow="fullscreen; camera; microphone"
+        sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
     </iframe>
-  </div>
 
-  <footer class="app-footer">
-    © ۱۴۰۴ حسابداری هوشمند ساحل | تمامی حقوق محفوظ است
-  </footer>
-</div>
+    <script>
+        const splash = document.getElementById('splashScreen');
+        
+        function hideSplash() {
+            splash.classList.add('splash-hidden');
+        }
+
+        // مخفی کردن لودینگ پس از بارگذاری کامل آی‌فریم
+        document.getElementById('appIframe').addEventListener('load', () => {
+            setTimeout(hideSplash, 800);
+        });
+
+        // تایم‌اوت رزرو برای اطمینان
+        setTimeout(hideSplash, 2500);
+    </script>
 
 </body>
 </html>
