@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0f172a">
+  
+  <title>حسابداری هوشمند ساحل</title>
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0f172a; font-family: 'Vazirmatn', Tahoma, sans-serif; height: 100vh; overflow: hidden; }
+    
+    .app-container { width: 100%; height: 100vh; display: flex; flex-direction: column; background: #0f172a; }
+    
+    .app-header {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      padding: 10px 20px;
+      border-bottom: 2px solid #1e293b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    
+    .app-header .brand { display: flex; align-items: center; gap: 12px; color: #f8fafc; text-decoration: none; }
+    .app-header .brand img { width: 40px; height: 40px; border-radius: 10px; background: #1e293b; padding: 4px; }
+    .app-header .brand h1 { font-size: 16px; font-weight: 700; }
+    .app-header .brand span { font-size: 11px; color: #94a3b8; display: block; }
+    
+    .app-header .actions { display: flex; gap: 10px; align-items: center; }
+    .app-header .actions .status {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .app-header .actions .status .dot { width: 6px; height: 6px; background: #34d399; border-radius: 50%; display: inline-block; animation: pulse 2s infinite; }
+    
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    
+    .app-content { flex: 1; width: 100%; background: transparent; }
+    .app-content iframe { width: 100%; height: 100%; border: none; background: transparent; }
+    
+    .app-footer {
+      background: #0f172a;
+      border-top: 1px solid #1e293b;
+      padding: 6px 20px;
+      text-align: center;
+      color: #64748b;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    
+    @media (max-width: 768px) {
+      .app-header .brand h1 { font-size: 13px; }
+      .app-header .brand span { font-size: 9px; }
+      .app-header .actions .status { font-size: 9px; padding: 2px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <header class="app-header">
+    <a href="#" class="brand">
+      <img src="https://lh3.googleusercontent.com/d/1MjBP1nitG_R3pTYPfc-BYBwzeuEZs5aO" alt="لوگو">
+      <div>
+        <h1>حسابداری هوشمند ساحل</h1>
+        <span>سیستم هوشمند مدیریت مالی</span>
+      </div>
+    </a>
+    <div class="actions">
+      <span class="status">
+        <span class="dot"></span> آنلاین
+      </span>
+    </div>
+  </header>
+
+  <div class="app-content">
+    <iframe src="https://script.google.com/macros/s/AKfycbwMxLIXB1JCQrmjs4KbKuFDWclDaYzxc0VFPEhKB0fcbgnWhVAVH36eEGeP2lTw0zU/exec" 
+            sandbox="allow-scripts allow-forms allow-same-origin allow-popups allow-modals">
+    </iframe>
+  </div>
+
+  <footer class="app-footer">
+    © ۱۴۰۴ حسابداری هوشمند ساحل | تمامی حقوق محفوظ است
+  </footer>
+</div>
+
+</body>
+</html>
