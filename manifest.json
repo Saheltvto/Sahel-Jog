@@ -1,0 +1,16 @@
+{
+  "name": "حسابداری هوشمند ساحل",
+  "short_name": "ساحل",
+  "description": "سیستم هوشمند مدیریت مالی و گزارشات",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "https://lh3.googleusercontent.com/d/1MjBP1nitG_R3pTYPfc-BYBwzeuEZs5aO",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
