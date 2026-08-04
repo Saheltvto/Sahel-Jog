@@ -54,13 +54,22 @@
     <script>
         // ==========================================================
         // مدیریت نشست ماندگار در سطح صفحه‌ی گیت‌هاب (top-level).
-        // این حافظه بر خلاف حافظه‌ی داخل iframe، از دید سافاری/ITP
-        // «شخص اول» است و پاک نمی‌شود — راه‌حل واقعی مشکل لاگین آیفون.
+        // توکن هم در localStorage و هم در خودِ آدرس URL این صفحه
+        // نگه‌داری می‌شود تا مستقل از رفتار storage در آیفون باشد.
         // ==========================================================
         const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycbzSeOv5ZkgBy1tW5hzPQq-wvG17pGJ8aN3JOpqW0wmZ4IMGEgiAWn_ntpojKaZpiEgl/exec';
         const TOKEN_KEY = 'sahel_app_token';
 
         function getStoredToken() {
+            // اول از خودِ URL این صفحه بخون (قابل‌اعتمادترین منبع)
+            try {
+                const urlToken = new URLSearchParams(window.location.search).get('token');
+                if (urlToken) {
+                    saveToken(urlToken);
+                    return urlToken;
+                }
+            } catch (e) {}
+            // در غیر این صورت از localStorage (ممکنه در آیفون پاک شده باشه)
             try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
         }
         function saveToken(token) {
@@ -71,25 +80,42 @@
         }
         function buildIframeSrc() {
             const token = getStoredToken();
-            return token ? (GAS_APP_URL + '?token=' + encodeURIComponent(token)) : GAS_APP_URL;
+            const params = new URLSearchParams();
+            if (token) params.set('token', token);
+            params.set('embedded', '1');
+            return GAS_APP_URL + '?' + params.toString();
         }
         function isTrustedOrigin(origin) {
-            return origin === 'https://script.google.com' || /\.googleusercontent\.com$/.test(new URL(origin).hostname);
+            try {
+                return origin === 'https://script.google.com' || /\.googleusercontent\.com$/.test(new URL(origin).hostname);
+            } catch (e) {
+                return false;
+            }
         }
 
         // دریافت پیام از داخل اپ (بعد از لاگین موفق یا خروج)
         window.addEventListener('message', function (event) {
-            try {
-                if (!isTrustedOrigin(event.origin)) return;
-            } catch (e) { return; }
+            if (!isTrustedOrigin(event.origin)) return;
 
             const data = event.data;
             if (!data || typeof data !== 'object') return;
 
             if (data.type === 'SAHEL_AUTH' && data.token) {
                 saveToken(data.token);
+                // توکن رو توی آدرس نمایشی همین صفحه هم می‌نویسیم
+                // تا اگر کاربر الان صفحه رو Bookmark/Add to Home Screen کنه، توکن همراهش بمونه
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.set('token', data.token);
+                    window.history.replaceState({}, '', url.toString());
+                } catch (e) {}
             } else if (data.type === 'SAHEL_LOGOUT') {
                 clearToken();
+                try {
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('token');
+                    window.history.replaceState({}, '', url.toString());
+                } catch (e) {}
             }
         });
 
