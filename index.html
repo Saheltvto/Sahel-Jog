@@ -93,7 +93,7 @@
             }
         }
 
-        // دریافت پیام از داخل اپ (بعد از لاگین موفق یا خروج)
+        // دریافت پیام از داخل اپ (بعد از لاگین موفق، خروج، یا درخواست رفرش فیلتر سراسری)
         window.addEventListener('message', function (event) {
             if (!isTrustedOrigin(event.origin)) return;
 
@@ -116,6 +116,13 @@
                     url.searchParams.delete('token');
                     window.history.replaceState({}, '', url.toString());
                 } catch (e) {}
+            } else if (data.type === 'SAHEL_RELOAD') {
+                // درخواست بازسازی کامل iframe از داخل اپ (مثلاً بعد از تغییر
+                // فیلتر سراسری سال مالی یا حالت شیت حسابداری). چون iframe
+                // sandbox‌شده و از origin دیگری‌ست، خودِ اپ نمی‌تواند مستقیم
+                // window.top.location را تغییر دهد؛ به‌جایش این پیام را
+                // می‌فرستد و اینجا src را با توکن فعلی دوباره می‌سازیم.
+                appIframe.src = buildIframeSrc();
             }
         });
 
