@@ -1,6 +1,6 @@
 {
-  "name": "حسابداری هوشمند ساحل نسخه جهاز اقیانوس",
-  "short_name": "حسابداری هوشمند ساحل",
+  "name": "فناوری اطلاعات ساحل",
+  "short_name": "ساحل",
   "description": "سیستم جامع حسابداری هوشمند ساحل",
   "start_url": "./index.html",
   "display": "standalone",
