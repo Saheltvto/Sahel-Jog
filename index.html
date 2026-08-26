@@ -53,23 +53,22 @@
 
     <script>
         // ==========================================================
-        // مدیریت نشست ماندگار در سطح صفحه‌ی گیت‌هاب (top-level).
-        // توکن هم در localStorage و هم در خودِ آدرس URL این صفحه
-        // نگه‌داری می‌شود تا مستقل از رفتار storage در آیفون باشد.
+        // مدیریت نشست در سطح صفحه‌ی گیت‌هاب (top-level).
+        // توکن فقط در localStorage نگهداری می‌شود — هرگز در آدرس‌بار
+        // (URL) این صفحه نوشته نمی‌شود، چون هر کپی/اشتراک این لینک
+        // یا هر bookmark باعث افشای نشست بدون نیاز به OTP می‌شد.
         // ==========================================================
         const GAS_APP_URL = 'https://script.google.com/macros/s/AKfycbzSeOv5ZkgBy1tW5hzPQq-wvG17pGJ8aN3JOpqW0wmZ4IMGEgiAWn_ntpojKaZpiEgl/exec';
         const TOKEN_KEY = 'sahel_app_token';
 
+        // درخواست دائمی‌سازی storage از مرورگر — احتمال پاک شدن خودکار
+        // localStorage (به‌خصوص روی iOS هنگام کمبود فضای دستگاه) را کاهش می‌دهد.
+        // تضمین ۱۰۰٪ نیست، ولی اولویت نگهداری داده را بالا می‌برد.
+        if (navigator.storage && navigator.storage.persist) {
+            navigator.storage.persist().catch(function () {});
+        }
+
         function getStoredToken() {
-            // اول از خودِ URL این صفحه بخون (قابل‌اعتمادترین منبع)
-            try {
-                const urlToken = new URLSearchParams(window.location.search).get('token');
-                if (urlToken) {
-                    saveToken(urlToken);
-                    return urlToken;
-                }
-            } catch (e) {}
-            // در غیر این صورت از localStorage (ممکنه در آیفون پاک شده باشه)
             try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
         }
         function saveToken(token) {
@@ -78,6 +77,22 @@
         function clearToken() {
             try { localStorage.removeItem(TOKEN_KEY); } catch (e) {}
         }
+
+        // اگر توکنی به‌اشتباه (مثلاً از یک لینک قدیمی که جایی ذخیره شده) در URL
+        // این صفحه وجود داشته باشد، آن را می‌خوانیم اما بلافاصله از آدرس‌بار
+        // پاک می‌کنیم تا در تاریخچه/اشتراک‌گذاری باقی نماند.
+        function consumeLegacyUrlToken() {
+            try {
+                const url = new URL(window.location.href);
+                const legacyToken = url.searchParams.get('token');
+                if (legacyToken) {
+                    saveToken(legacyToken);
+                    url.searchParams.delete('token');
+                    window.history.replaceState({}, '', url.toString());
+                }
+            } catch (e) {}
+        }
+
         function buildIframeSrc() {
             const token = getStoredToken();
             const params = new URLSearchParams();
@@ -101,21 +116,10 @@
             if (!data || typeof data !== 'object') return;
 
             if (data.type === 'SAHEL_AUTH' && data.token) {
+                // فقط در localStorage ذخیره می‌شود — هرگز در URL این صفحه
                 saveToken(data.token);
-                // توکن رو توی آدرس نمایشی همین صفحه هم می‌نویسیم
-                // تا اگر کاربر الان صفحه رو Bookmark/Add to Home Screen کنه، توکن همراهش بمونه
-                try {
-                    const url = new URL(window.location.href);
-                    url.searchParams.set('token', data.token);
-                    window.history.replaceState({}, '', url.toString());
-                } catch (e) {}
             } else if (data.type === 'SAHEL_LOGOUT') {
                 clearToken();
-                try {
-                    const url = new URL(window.location.href);
-                    url.searchParams.delete('token');
-                    window.history.replaceState({}, '', url.toString());
-                } catch (e) {}
             } else if (data.type === 'SAHEL_RELOAD') {
                 // درخواست بازسازی کامل iframe از داخل اپ (مثلاً بعد از تغییر
                 // فیلتر سراسری سال مالی یا حالت شیت حسابداری). چون iframe
@@ -138,7 +142,8 @@
         });
         setTimeout(hideSplash, 3000); // فالبک اطمینان
 
-        // آدرس iframe را همراه با توکن ذخیره‌شده (در صورت وجود) تنظیم می‌کنیم
+        // ابتدا هر توکن قدیمی در URL را مصرف و پاک کن، سپس iframe را بساز
+        consumeLegacyUrlToken();
         appIframe.src = buildIframeSrc();
     </script>
 
