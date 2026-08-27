@@ -1,8 +1,10 @@
 {
-  "name": "فناوری اطلاعات ساحل",
+  "id": "/",
+  "name": "حسابداری هوشمند ساحل",
   "short_name": "ساحل",
   "description": "سیستم جامع حسابداری هوشمند ساحل",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#090d16",
@@ -12,13 +14,19 @@
       "src": "icon.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icon.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
