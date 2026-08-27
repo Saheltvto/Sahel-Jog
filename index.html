@@ -68,6 +68,15 @@
             navigator.storage.persist().catch(function () {});
         }
 
+        // ثبت Service Worker: بدون این، کروم/سامسونگ‌اینترنت اپ را به‌صورت
+        // WebAPK واقعی نصب نمی‌کند و فقط یک میان‌بر (shortcut) می‌سازد که
+        // با پاک‌سازی حافظه/میان‌برهای سیستم به‌راحتی حذف می‌شود.
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('./sw.js').catch(function () {});
+            });
+        }
+
         function getStoredToken() {
             try { return localStorage.getItem(TOKEN_KEY) || ''; } catch (e) { return ''; }
         }
