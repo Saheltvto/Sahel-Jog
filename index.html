@@ -48,7 +48,7 @@
     <iframe
         id="appIframe"
         allow="fullscreen; camera; microphone"
-        sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+        sandbox="allow-downloads allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
     </iframe>
 
     <script>
@@ -117,12 +117,30 @@
             }
         }
 
-        // دریافت پیام از داخل اپ (بعد از لاگین موفق، خروج، یا درخواست رفرش فیلتر سراسری)
+        // دریافت پیام از داخل اپ (بعد از لاگین موفق، خروج، درخواست رفرش فیلتر سراسری، یا دانلود فایل)
         window.addEventListener('message', function (event) {
             if (!isTrustedOrigin(event.origin)) return;
 
             const data = event.data;
             if (!data || typeof data !== 'object') return;
+
+            // ---- دانلود فایل (خروجی Excel / CSV و ...) به درخواست اپ ----
+            if (data.sahelDownload === true && data.buffer) {
+                try {
+                    var blob = new Blob([data.buffer], { type: data.mime || 'application/octet-stream' });
+                    var dlUrl = URL.createObjectURL(blob);
+                    var dlLink = document.createElement('a');
+                    dlLink.href = dlUrl;
+                    dlLink.download = String(data.filename || 'file').replace(/[\\\/:*?"<>|]/g, '-');
+                    document.body.appendChild(dlLink);
+                    dlLink.click();
+                    dlLink.remove();
+                    setTimeout(function () { URL.revokeObjectURL(dlUrl); }, 60000);
+                    // به اپ خبر بده که دانلود را این صفحه انجام داد
+                    try { event.source.postMessage({ sahelDownloadAck: true }, event.origin); } catch (e) {}
+                } catch (e) {}
+                return;
+            }
 
             if (data.type === 'SAHEL_AUTH' && data.token) {
                 // فقط در localStorage ذخیره می‌شود — هرگز در URL این صفحه
