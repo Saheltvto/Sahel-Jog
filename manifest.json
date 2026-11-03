@@ -1,7 +1,7 @@
 {
   "id": "/",
   "name": "حسابداری هوشمند ساحل",
-  "short_name": "ساحل",
+  "short_name": "ساحل ورژن جهاز",
   "description": "سیستم جامع حسابداری هوشمند ساحل",
   "start_url": "./index.html",
   "scope": "./",
